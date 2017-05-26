@@ -8,8 +8,8 @@
 #include "MpuUtil.h"
 
 
-#define SAMPLES_FOR_AVG	5
-
+#define SAMPLES_FOR_AVG		5
+#define MS					1
 /*
  * main.c
  */
@@ -42,49 +42,52 @@ int main(void) {
 	initZ = initZ / SAMPLES_FOR_AVG;
 
     while(1) {
-    	for (i = 0; i < SAMPLES_FOR_AVG; i++) {
-    		accX[i] = readMeasurement(ACCEL_X);
-    		accY[i] = readMeasurement(ACCEL_Y);
-    		accZ[i] = readMeasurement(ACCEL_Z);
-    		accXAvg += accX[i];
-    		accYAvg += accY[i];
-    		accZAvg += accZ[i];
-    		delayms(1);
-    	}
+//    	for (i = 0; i < SAMPLES_FOR_AVG; i++) {
+//    		accX[i] = readMeasurement(ACCEL_X);
+//    		accY[i] = readMeasurement(ACCEL_Y);
+//    		accZ[i] = readMeasurement(ACCEL_Z);
+//    		accXAvg += accX[i];
+//    		accYAvg += accY[i];
+//    		accZAvg += accZ[i];
+//    		delayms(1);
+//    	}
 
-    	accXAvg = accXAvg / SAMPLES_FOR_AVG;
-    	accYAvg = accYAvg / SAMPLES_FOR_AVG;
-    	accZAvg = accZAvg / SAMPLES_FOR_AVG;
+
+//    	accXAvg = accXAvg / SAMPLES_FOR_AVG;
+//    	accYAvg = accYAvg / SAMPLES_FOR_AVG;
+//    	accZAvg = accZAvg / SAMPLES_FOR_AVG;
+    	accXAvg = readMeasurement(ACCEL_X);
+    	accYAvg = readMeasurement(ACCEL_Y);
+    	accZAvg = readMeasurement(ACCEL_Z);
+
     	accXAvg -= initX;
     	accYAvg -= initY;
     	accZAvg -= initZ;
 
+//    	if (fabsf(accXAvg) < .05) {
+//    		accXAvg = 0;
+//    	}
+//    	if (fabsf(accYAvg) < .05) {
+//    		accYAvg = 0;
+//    	}
+//    	if (fabsf(accZAvg) < .05) {
+//    		accZAvg = 0;
+//    	}
 
-    	if (fabsf(accXAvg) < .05) {
-    		accXAvg = 0;
-    	}
-    	if (fabsf(accYAvg) < .05) {
-    		accYAvg = 0;
-    	}
-    	if (fabsf(accZAvg) < .05) {
-    		accZAvg = 0;
-    	}
+    	veloX += (accXAvg * (MS / 1000.0f * 9.81f));
+    	veloY += (accYAvg * (MS / 1000.0f * 9.81f));
+    	veloZ += (accZAvg * (MS / 1000.0f * 9.81f));
 
-    	veloX += (accXAvg * (SAMPLES_FOR_AVG / 1000.0f * 9.81f));
-    	veloY += (accYAvg * (SAMPLES_FOR_AVG / 1000.0f * 9.81f));
-    	veloZ += (accZAvg * (SAMPLES_FOR_AVG / 1000.0f * 9.81f));
-
-    	distX += (veloX * (SAMPLES_FOR_AVG / 1000.0f));
-    	distY += (veloY * (SAMPLES_FOR_AVG / 1000.0f));
-    	distZ += (veloZ * (SAMPLES_FOR_AVG / 1000.0f));
+    	distX += (veloX * (MS / 1000.0f));
+    	distY += (veloY * (MS / 1000.0f));
+    	distZ += (veloZ * (MS / 1000.0f));
 
     	if (count == 250) {
     		count = 0;
-    		printf("X Distance: %f\n", distX);
-    		printf("Y Distance: %f\n", distY);
-    		printf("Z Distance: %f\n", distZ);
+    		printf("%f\t %f\t %f\n", distX, distY, distZ);
     	}
     	count++;
+    	delayms(1);
     }
 
 	return 0;
