@@ -11,8 +11,16 @@
 
 static void SetClk12MHz(void);
 
+// time in uints of 10 us
+uint64_t time = 0;
+
 void DelayInit(void){
     SetClk12MHz();
+
+    TA0CTL = TASSEL__SMCLK + ID_0 + MC__UP;
+    TA0CCTL0 = OUTMOD_3 + CCIE;
+    TA0CCR0 = 120;
+
 }
 
 void delayms(uint16_t ms){
@@ -56,4 +64,18 @@ static void SetClk12MHz(void){
                                                 // Clear XT2,XT1,DCO fault flags
         SFRIFG1 &= ~OFIFG;                      // Clear fault flags
       }while (SFRIFG1&OFIFG);                   // Test oscillator fault flag
+}
+
+uint64_t timeNow(void) {
+	return time;
+}
+
+uint64_t timeSince(uint64_t prevTime) {
+	return time - prevTime;
+}
+
+#pragma vector=TIMER0_A0_VECTOR
+__interrupt void Timer_A (void)
+{
+	time++;
 }

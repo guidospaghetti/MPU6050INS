@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+
+
 /*
  * @fn LED1_INIT(void)
  * @brief Initializes the red LED
@@ -58,5 +60,9 @@ void DelayInit(void);
  * @brief Halts the processor for the specified amount of time
  */
 void delayms(uint16_t);
+
+uint64_t timeNow(void);
+
+uint64_t timeSince(uint64_t prevTime);
 
 #endif /* GENERALFUNCTIONS_H_ */
